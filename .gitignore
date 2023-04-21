@@ -15,3 +15,12 @@ apci.o
 apci_dev.o
 apci_fops.o
 modules.order
+
+**/*.*.cmd
+
+apcilib/*
+!apcilib/*.c
+!apcilib/*.h
+!apcilib/Makefile
+!apcilib/*.rpd
+!apcilib/*.inc
