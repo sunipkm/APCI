@@ -1,4 +1,4 @@
-all: isp_fpga test_idio8 axiodac axiodac_irq pcie_dio_48s mpcie_quad_8 mpcie-ii-16-irq pcie-idio-24-irq mpcie-dio-24s-irq mpcie_aio16_16f_dma mpcie_aio16_16f pcie_iiro_16_irq irq check check_dma dac
+all: mpcie_dio_24a_irq test_pwm isp_fpga test_idio8 axiodac axiodac_irq pcie_dio_48s mpcie_quad_8 mpcie-ii-16-irq pcie-idio-24-irq mpcie-dio-24s-irq mpcie_aio16_16f_dma mpcie_aio16_16f pcie_iiro_16_irq irq check check_dma dac
 
 ifneq ("$(wildcard /etc/redhat-release)","")
     REDHAT_VERSION = $(shell cat /etc/redhat-release | grep  -o "[0-9]*" | head -1)
@@ -11,6 +11,12 @@ ifeq ($(REDHAT_VERSION), 7)
 else
 	GCC = gcc
 endif
+
+mpcie_dio_24a_irq: mpcie-dio-24a-irq.c apcilib.h apcilib.c
+	$(GCC) -o mpcie_dio_24a_irq mpcie-dio-24a-irq.c apcilib.c -lm -lpthread -O3
+
+test_pwm: test-pwm.c apcilib.h apcilib.c
+	$(GCC) -o test_pwm test-pwm.c apcilib.c -lm -lpthread -O3
 
 isp_fpga: isp-fpga.c apcilib.h apcilib.c
 	$(GCC) -o isp_fpga isp-fpga.c apcilib.c -lm -lpthread -O3
@@ -68,5 +74,4 @@ dac: dac.c apcilib.h apcilib.c
 
 
 clean:
-	rm isp_fpga test_idio8 axiodac axiodac_irq pcie_dio_48s mpcie_quad_8 mpcie-ii-16-irq pcie-idio-24-irq mpcie-dio-24s-irq mpcie_aio16_16f_dma mpcie_aio16_16f pcie_iiro_16_irq irq check check_dma dac
-
+	rm test_pwm isp_fpga test_idio8 axiodac axiodac_irq pcie_dio_48s mpcie_quad_8 mpcie-ii-16-irq pcie-idio-24-irq mpcie-dio-24s-irq mpcie_aio16_16f_dma mpcie_aio16_16f pcie_iiro_16_irq irq check check_dma dac
