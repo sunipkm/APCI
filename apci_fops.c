@@ -97,9 +97,7 @@ long  ioctl_apci(struct file *filp, unsigned int cmd, unsigned long arg)
 
         case apci_get_device_info_ioctl:
           apci_debug("entering get_device_info \n");
-          #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 18, 0))
-                    status = access_ok((const void *) arg, sizeof(info_struct));
-          #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
+          #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
                     status = access_ok( arg, sizeof(info_struct));
           #else
                     status = access_ok(VERIFY_WRITE, arg,
@@ -125,9 +123,7 @@ long  ioctl_apci(struct file *filp, unsigned int cmd, unsigned long arg)
 
 
         case apci_write_ioctl:
-          #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 18, 0))
-                    status = access_ok ((const void *)arg, sizeof(iopack));
-          #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
+          #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
                     status = access_ok (arg, sizeof(iopack));
           #else
                     status = access_ok (VERIFY_WRITE, arg, sizeof(iopack));
@@ -201,9 +197,7 @@ long  ioctl_apci(struct file *filp, unsigned int cmd, unsigned long arg)
 
 
           case apci_read_ioctl:
-               #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 18, 0))
-                         status = access_ok((const void *)arg, sizeof(iopack));
-               #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
+               #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
                          status = access_ok(arg, sizeof(iopack));
                #else
                          status = access_ok(VERIFY_WRITE, arg, sizeof(iopack));
@@ -267,6 +261,12 @@ long  ioctl_apci(struct file *filp, unsigned int cmd, unsigned long arg)
 
 
     case apci_wait_for_irq_ioctl:
+         if (ddata->irq_disabled)
+         {
+             apci_error("IRQ is disabled.\n");
+             return -EINVAL;
+         }
+
          apci_info("enter wait_for_IRQ.\n");
 
          device_index = arg;
@@ -298,6 +298,11 @@ long  ioctl_apci(struct file *filp, unsigned int cmd, unsigned long arg)
          break;
 
     case apci_cancel_wait_ioctl:
+         if (ddata->irq_disabled)
+         {
+             apci_error("IRQ is disabled.\n");
+             return -EINVAL;
+         }
          apci_info("Cancel wait_for_irq.\n");
          device_index = arg;
 
@@ -323,9 +328,7 @@ long  ioctl_apci(struct file *filp, unsigned int cmd, unsigned long arg)
          break;
 
      case apci_set_dma_transfer_size:
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 18, 0))
-          status = access_ok((const void *)arg, sizeof(dma_buffer_settings_t));
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
           status = access_ok(arg, sizeof(dma_buffer_settings_t));
 #else
           status = access_ok(VERIFY_WRITE, arg, sizeof(dma_buffer_settings_t));
@@ -367,9 +370,8 @@ long  ioctl_apci(struct file *filp, unsigned int cmd, unsigned long arg)
 
      case apci_data_ready:
          apci_info("Getting data ready\n");
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 18, 0))
-          status = access_ok((const void *)arg, sizeof(dma_buffer_settings_t));
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
           status = access_ok(arg, sizeof(dma_buffer_settings_t));
 #else
           status = access_ok(VERIFY_WRITE, arg, sizeof(dma_buffer_settings_t));
@@ -565,6 +567,13 @@ int mmap_apci (struct file *filp, struct vm_area_struct *vma)
                     vma->vm_end - vma->vm_start,
                     vma->vm_page_prot);
           break;
+     case 2:
+          status = remap_pfn_range(vma,
+                    vma->vm_start,
+                    ddata->regions[2].start >> PAGE_SHIFT,
+                    vma->vm_end - vma->vm_start,
+                    vma->vm_page_prot);
+          break; 
      default:
           //complain and return error
           break;

@@ -24,6 +24,9 @@
 
 
 /* The device IDs for all the PCI/PCIe/mPCIe/etc cards this driver will support. */
+#define ROB_MATRIX_8X16 0x0180
+#define MPCIE_DIO_24A 0x2E50
+
 #define PCIe_DIO_24	0x0C52
 #define PCIe_DIO_24D	0x0C53
 #define PCIe_DIO_24S	0x0E53
@@ -225,6 +228,9 @@
 #define NAME_PCI_WDG_CSM                "pci_wdg_csm"
 #define NAME_PCI_WDG_IMPAC              "pci_wdg_impac"
 #define NAME_MPCIE_DIO_24S              "mpcie_dio_24s"
+#define NAME_ROB_MATRIX_8X16            "rob_matrix_8x16"
+#define NAME_MPCIE_DIO_24A            "mpcie_dio_24a"
+
 #define NAME_MPCIE_IDIO_8               "mpcie_idio_8"
 #define NAME_MPCIE_IIRO_8               "mpcie_iiro_8"
 #define NAME_MPCIE_IDIO_4               "mpcie_idio_4"
@@ -241,7 +247,6 @@
 #define NAME_PCI_QUAD_8                 "pci_quad_8"
 #define NAME_PCI_QUAD_4                 "pci_quad_4"
 
-//#define NAME_MPCIE_DIO_24S              "mpcie_dio_24s"
 #define NAME_MPCIE_DIO_24S_R1           "mpcie_dio_24s"
 #define NAME_PCIe_IDIO_12				"pcie_idio_12"
 #define NAME_PCIe_IDIO_24				"pcie_idio_24"
@@ -324,6 +329,7 @@ struct apci_my_info {
      const struct pci_device_id *id;
      int is_pcie;
      int irq;
+     int irq_disabled; /* Set via module param when userspace is expected to poll for interrupts */
      int irq_capable; /* is the card even able to generate irqs? */
      int waiting_for_irq; /* boolean for if the user has requested an IRQ */
      int irq_cancelled; /* boolean for if the user has cancelled the wait */

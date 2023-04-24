@@ -24,3 +24,5 @@ apcilib/*
 !apcilib/Makefile
 !apcilib/*.rpd
 !apcilib/*.inc
+
+**/.DS_Store
