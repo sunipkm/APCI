@@ -185,18 +185,20 @@ int main(int argc, char *argv[])
     printf("Provide input to continue...");
     getchar();
 
-    status = apci_write16_debug("Setting PWM LOW...", fd, dev_idx, bar_reg, reg_ofst + 0x20, 0x7fff); // 0x7fff * 8ns
-    status = apci_write16_debug("Setting PWM HIGH...", fd, dev_idx, bar_reg, reg_ofst + 0x24, 0x7fff); // 0xffff * 8 ns
+    status = apci_write16_debug("Setting PWM LOW", fd, dev_idx, bar_reg, reg_ofst + 0x20, 0x7fff); // 0x7fff * 8ns
+    status = apci_write16_debug("Setting PWM HIGH", fd, dev_idx, bar_reg, reg_ofst + 0x24, 0xffff); // 0xffff * 8 ns
 
     printf("Provide input to turn on PWM...");
     getchar();
 
-    status = apci_write8_debug("Turning on PWM...", fd, dev_idx, bar_reg, reg_ofst + 0x10, 0x3); // PWM bit to high, Pgo to high
+    status = apci_write8_debug("Turning on PWM", fd, dev_idx, bar_reg, reg_ofst + 0x10, 0x6); // PWM bit to high, Pgo to high
+    status = apci_write32_debug("Setting GO", fd, dev_idx, bar_reg, 0x50, 1 << (fet_idx + 8)); // write to GO
     printf("Provide input to turn off PWM...");
     getchar();
 
-    status = apci_write8_debug("Turning off PWM...", fd, dev_idx, bar_reg, reg_ofst + 0x10, 0x0); // PWM bit to low, Pgo to high
-    status = apci_write8_debug("Turning off all FETs...", fd, dev_idx, bar_reg, 0x1, 0xff); // active low
+    status = apci_write8_debug("Turning off PWM", fd, dev_idx, bar_reg, reg_ofst + 0x10, 0x0); // PWM bit to low, Pgo to high
+    status = apci_write32_debug("Setting GO", fd, dev_idx, bar_reg, 0x50, 0x0); // write to GO
+    status = apci_write8_debug("Turning off all FETs", fd, dev_idx, bar_reg, 0x1, 0xff); // active low
 
     printf("Provide input to turn all ports to INPUT...");
     getchar();
