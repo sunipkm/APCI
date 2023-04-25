@@ -74,4 +74,4 @@ dac: dac.c apcilib.h apcilib.c
 
 
 clean:
-	rm test_pwm isp_fpga test_idio8 axiodac axiodac_irq pcie_dio_48s mpcie_quad_8 mpcie-ii-16-irq pcie-idio-24-irq mpcie-dio-24s-irq mpcie_aio16_16f_dma mpcie_aio16_16f pcie_iiro_16_irq irq check check_dma dac
+	rm mpcie_dio_24a_irq test_pwm isp_fpga test_idio8 axiodac axiodac_irq pcie_dio_48s mpcie_quad_8 mpcie-ii-16-irq pcie-idio-24-irq mpcie-dio-24s-irq mpcie_aio16_16f_dma mpcie_aio16_16f pcie_iiro_16_irq irq check check_dma dac

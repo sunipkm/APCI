@@ -51,7 +51,10 @@ void * worker(void *arg)
             if (terminated)
                 printf("User canceled, aborting worker thread.\n");
             else
+            {
                 printf("unrecognized error occurred, aborting worker thread.\n");
+                terminated = 1;
+            }
         }
     } while (!terminated);
 }
@@ -87,7 +90,11 @@ int main (int argc, char **argv)
         exit(0);
     }
 
+    sleep(1);
+
     pthread_create(&worker_thread, NULL, &worker, NULL);
+
+    sleep(1);
 
     out8(0xFC, 0x04); // BOARD RESET
 
