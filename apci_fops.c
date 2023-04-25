@@ -75,6 +75,48 @@ long  ioctl_apci(struct file *filp, unsigned int cmd, unsigned long arg)
     apci_info("inside ioctl.\n");
 
     switch (cmd) {
+        case apci_get_devices_ioctl:
+            apci_info("inside ioctl: apci_get_device_info_ioctl\n");
+            break;
+        case apci_get_device_info_ioctl:
+            apci_info("inside ioctl: apci_get_device_info_ioctl\n");
+            break;
+        case apci_write_ioctl:
+            apci_info("inside ioctl: apci_write_ioctl\n");
+            break;
+        case apci_read_ioctl:
+            apci_info("inside ioctl: apci_read_ioctl\n");
+            break; 
+        case apci_wait_for_irq_ioctl:
+            apci_info("inside ioctl: apci_wait_for_irq_ioctl\n");
+            break;
+        case apci_cancel_wait_ioctl:
+            apci_info("inside ioctl: apci_cancel_wait_ioctl\n");
+            break;
+        case apci_get_base_address:
+            apci_info("inside ioctl: apci_get_base_address\n");
+            break;
+        case apci_set_dma_transfer_size:
+            apci_info("inside ioctl: apci_set_dma_transfer_size\n");
+            break;
+        case apci_data_ready:
+            apci_info("inside ioctl: apci_data_ready\n");
+            break;
+        case apci_data_done:    
+            apci_info("inside ioctl: apci_data_done\n");
+            break;
+        case apci_write_buff_ioctl:
+            apci_info("inside ioctl: apci_write_buff_ioctl\n");
+            break;
+        case apci_set_dac_buff_size:
+            apci_info("inside ioctl: apci_set_dac_buff_size\n");
+            break;
+        default:
+            apci_info("inside ioctl: Unknown IOCTL %x\n", cmd);
+            break;
+    }
+
+    switch (cmd) {
         struct apci_my_info *child;
         case apci_get_devices_ioctl:
           apci_debug("entering get_devices\n");
