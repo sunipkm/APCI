@@ -38,6 +38,8 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
+    signal(SIGINT, sig_handler);
+
     int status = -1;
 
     status = reset_device(fd); // apci_write8_debug("Resetting FPGA", fd, dev_idx, bar_reg, 0xfc, 0x4);
@@ -67,18 +69,26 @@ int main(int argc, char *argv[])
     // status = apci_write8_debug("Turning off PWM", fd, dev_idx, bar_reg, reg_ofst + 0x10, 0x0); // PWM bit to low, Pgo to high
     // status = apci_write8_debug("Turning off all FETs", fd, dev_idx, bar_reg, 0x1, 0xff); // active low
 
-    printf("Provide input to turn ON PWM...");
-    getchar();
+    // printf("Provide input to turn ON PWM...");
+    // getchar();
 
-    status = portb_start_pwm(fd, 0, 0x7fff, 0xffff);
+    status = portb_start_pwm(fd, 0, 0x7fff, 0x7fff);
 
-    printf("Provide input to turn OFF PWM...");
-    getchar();
+    // printf("Provide input to turn OFF PWM...");
+    // getchar();
+    int i = 5;
+    while (!done && i)
+    {
+        printf("Time remaining: %d s\r", i--);
+        fflush(stdout);
+        sleep(1);
+    }
+    printf("\n");
 
     status = portb_stop_pwm(fd, 0);
 
-    printf("Provide input to turn all ports to INPUT...");
-    getchar();
+    // printf("Provide input to turn all ports to INPUT...");
+    // getchar();
 
     status = portb_set_input(fd);
 cleanup:
