@@ -25,6 +25,7 @@
 
 #include "pwm_api.h"
 
+#if PWM_NO_USE_DEBUG == 0
 int apci_write8_debug(const char *msg, int fd, unsigned long device_index, int bar, int offset, unsigned char data)
 {
     int status = 0;
@@ -129,6 +130,49 @@ int apci_read32_debug(const char *msg, int fd, unsigned long device_index, int b
     }
     return status;
 }
+#else
+int apci_write8_debug(const char *msg, int fd, unsigned long device_index, int bar, int offset, unsigned char data)
+{
+    return apci_write8(fd, device_index, bar, offset, data);
+}
+
+int apci_write16_debug(const char *msg, int fd, unsigned long device_index, int bar, int offset, unsigned short data)
+{
+    return apci_write16(fd, device_index, bar, offset, data);
+}
+
+int apci_write32_debug(const char *msg, int fd, unsigned long device_index, int bar, int offset, unsigned int data)
+{
+    return apci_write32(fd, device_index, bar, offset, data);
+}
+
+int apci_read8_debug(const char *msg, int fd, unsigned long device_index, int bar, int offset, unsigned char * _Nullable data)
+{
+    unsigned char _data = 0xff;
+    int status = apci_read8(fd, device_index, bar, offset, &_data);
+    if (data)
+        *data = _data;
+    return status;
+}
+
+int apci_read16_debug(const char *msg, int fd, unsigned long device_index, int bar, int offset, unsigned short * _Nullable data)
+{
+    unsigned short _data = 0xff;
+    int status = apci_read16(fd, device_index, bar, offset, &_data);
+    if (data)
+        *data = _data;
+    return status;
+}
+
+int apci_read32_debug(const char *msg, int fd, unsigned long device_index, int bar, int offset, unsigned int * _Nullable data)
+{
+    unsigned int _data = 0xff;
+    int status = apci_read32(fd, device_index, bar, offset, &_data);
+    if (data)
+        *data = _data;
+    return status;
+}
+#endif
 
 int reset_device(int fd)
 {

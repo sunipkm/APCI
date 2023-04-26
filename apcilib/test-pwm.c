@@ -30,8 +30,6 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-
-
     int fd = open(argv[1], O_RDWR); // open file
 
     if (fd < 0) // error
@@ -39,14 +37,6 @@ int main(int argc, char *argv[])
         printf("Could not open %s, check module/permissions. Error: %s\n\n", argv[1], strerror(errno));
         exit(0);
     }
-
-    int fet_idx = 0;                      // bit offset 8
-    int reg_ofst = 0x100 * (fet_idx + 9); // bit 8 + 1
-    const uint8_t turn_all_off = 0x9b;
-    const uint8_t turn_on_b = turn_all_off ^ 0x2; // clear bit 2 to set PORT B to output
-    const unsigned long dev_idx = 1;
-    const int dio_ctrl = 0x3;
-    const int bar_reg = 1; // somehow bar needs to be 1 for this
 
     int status = -1;
 
@@ -59,22 +49,6 @@ int main(int argc, char *argv[])
         goto cleanup;
     }
 
-    sleep(1);
-
-    status = portb_set_output(fd);
-    sleep(1);
-
-    status = apci_read8_debug("Reading DIO control status", fd, dev_idx, bar_reg, dio_ctrl, NULL);
-
-    status = apci_read8_debug("Reading port B register", fd, dev_idx, bar_reg, 0x1, NULL);
-    printf("Provide input to continue...");
-    getchar();
-
-    status = apci_write8_debug("Turning on channel 0 in port B", fd, dev_idx, bar_reg, 0x1, 0xfe); // active low
-    printf("Provide input to continue...");
-    getchar();
-
-    status = apci_write8_debug("Turning off all channels in port B", fd, dev_idx, bar_reg, 0x1, 0xff);
     // printf("Provide input to continue...");
     // getchar();
 
@@ -96,22 +70,17 @@ int main(int argc, char *argv[])
     printf("Provide input to turn ON PWM...");
     getchar();
 
-    status = portb_start_pwm(fd, fet_idx, 0x7fff, 0xffff);
+    status = portb_start_pwm(fd, 0, 0x7fff, 0xffff);
 
     printf("Provide input to turn OFF PWM...");
     getchar();
 
-    status = portb_stop_pwm(fd, fet_idx);
+    status = portb_stop_pwm(fd, 0);
 
     printf("Provide input to turn all ports to INPUT...");
     getchar();
 
     status = portb_set_input(fd);
-    printf("Provide input to continue...");
-    getchar();
-
-    status = apci_read8_debug("Reading DIO control", fd, dev_idx, bar_reg, dio_ctrl, NULL);
-
 cleanup:
     close(fd);
 }
