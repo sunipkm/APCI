@@ -10,122 +10,15 @@
 #include <stdint.h>
 #include <signal.h>
 
-#include "apcilib.h"
+#include "pwm_api.h"
 
 #define IM_ARRAYSIZE(x) \
     (sizeof(x) / sizeof(x[0]))
-
-#define _Nullable
 
 volatile sig_atomic_t done = 0;
 void sig_handler(int sig)
 {
     done = 1;
-}
-
-int apci_write8_debug(const char *msg, int fd, unsigned long device_index, int bar, int offset, unsigned char data)
-{
-    int status = 0;
-    printf("%s... (Dev [%lu] Bar [%d] Reg [0x%x] Value [0x%02x])\t", msg, device_index, bar, offset, data);
-    status = apci_write8(fd, device_index, bar, offset, data);
-    if (status)
-    {
-        printf("Errno: %d, Error: %s\n\n", errno, strerror(errno));
-    }
-    else
-    {
-        printf("Success\n\n");
-    }
-    return status;
-}
-
-int apci_write16_debug(const char *msg, int fd, unsigned long device_index, int bar, int offset, unsigned short data)
-{
-    int status = 0;
-    printf("%s... (Dev [%lu] Bar [%d] Reg [0x%x] Value [0x%04x])\t", msg, device_index, bar, offset, data);
-    status = apci_write16(fd, device_index, bar, offset, data);
-    if (status)
-    {
-        printf("Errno: %d, Error: %s\n\n", errno, strerror(errno));
-    }
-    else
-    {
-        printf("Success\n\n");
-    }
-    return status;
-}
-
-int apci_write32_debug(const char *msg, int fd, unsigned long device_index, int bar, int offset, unsigned int data)
-{
-    int status = 0;
-    printf("%s... (Dev [%lu] Bar [%d] Reg [0x%x] Value [0x%08x])\t", msg, device_index, bar, offset, data);
-    status = apci_write32(fd, device_index, bar, offset, data);
-    if (status)
-    {
-        printf("Errno: %d, Error: %s\n\n", errno, strerror(errno));
-    }
-    else
-    {
-        printf("Success\n\n");
-    }
-    return status;
-}
-
-int apci_read8_debug(const char *msg, int fd, unsigned long device_index, int bar, int offset, unsigned char * _Nullable data)
-{
-    int status = 0;
-    unsigned char _data = 0xff;
-    printf("%s... (Dev [%lu] Bar [%d] Reg [0x%x])\t", msg, device_index, bar, offset);
-    status = apci_read8(fd, device_index, bar, offset, &_data);
-    if (status)
-    {
-        printf("Errno: %d, Error: %s\n\n", errno, strerror(errno));
-    }
-    else
-    {
-        if (data != NULL)
-            *data = _data;
-        printf("Value: 0x%02x\n\n", _data);
-    }
-    return status;
-}
-
-int apci_read16_debug(const char *msg, int fd, unsigned long device_index, int bar, int offset, unsigned short * _Nullable data)
-{
-    int status = 0;
-    unsigned short _data = 0xff;
-    printf("%s... (Dev [%lu] Bar [%d] Reg [0x%x])\t", msg, device_index, bar, offset);
-    status = apci_read16(fd, device_index, bar, offset, &_data);
-    if (status)
-    {
-        printf("Errno: %d, Error: %s\n\n", errno, strerror(errno));
-    }
-    else
-    {
-        if (data != NULL)
-            *data = _data;
-        printf("Value: 0x%04x\n\n", _data);
-    }
-    return status;
-}
-
-int apci_read32_debug(const char *msg, int fd, unsigned long device_index, int bar, int offset, unsigned int * _Nullable data)
-{
-    int status = 0;
-    unsigned int _data = 0xff;
-    printf("%s... (Dev [%lu] Bar [%d] Reg [0x%x])\t", msg, device_index, bar, offset);
-    status = apci_read32(fd, device_index, bar, offset, &_data);
-    if (status)
-    {
-        printf("Errno: %d, Error: %s\n\n", errno, strerror(errno));
-    }
-    else
-    {
-        if (data != NULL)
-            *data = _data;
-        printf("Value: 0x%08x\n\n", _data);
-    }
-    return status;
 }
 
 int main(int argc, char *argv[])
@@ -157,7 +50,7 @@ int main(int argc, char *argv[])
 
     int status = -1;
 
-    status = apci_write8_debug("Resetting FPGA", fd, dev_idx, bar_reg, 0xfc, 0x4);
+    status = reset_device(fd); // apci_write8_debug("Resetting FPGA", fd, dev_idx, bar_reg, 0xfc, 0x4);
 
     if (status) // exit because could not write to register
     {
@@ -168,7 +61,7 @@ int main(int argc, char *argv[])
 
     sleep(1);
 
-    status = apci_write8_debug("Setting port B to output", fd, dev_idx, bar_reg, dio_ctrl, turn_on_b);
+    status = portb_set_output(fd);
     sleep(1);
 
     status = apci_read8_debug("Reading DIO control status", fd, dev_idx, bar_reg, dio_ctrl, NULL);
@@ -182,28 +75,38 @@ int main(int argc, char *argv[])
     getchar();
 
     status = apci_write8_debug("Turning off all channels in port B", fd, dev_idx, bar_reg, 0x1, 0xff);
-    printf("Provide input to continue...");
+    // printf("Provide input to continue...");
+    // getchar();
+
+    // status = apci_write16_debug("Setting PWM LOW", fd, dev_idx, bar_reg, reg_ofst + 0x20, 0x7fff); // 0x7fff * 8ns
+    // status = apci_write16_debug("Setting PWM HIGH", fd, dev_idx, bar_reg, reg_ofst + 0x24, 0xffff); // 0xffff * 8 ns
+
+    // printf("Provide input to turn on PWM...");
+    // getchar();
+
+    // status = apci_write8_debug("Turning on PWM", fd, dev_idx, bar_reg, reg_ofst + 0x10, 0x6); // PWM bit to high, Pgo to high
+    // status = apci_write32_debug("Setting GO", fd, dev_idx, bar_reg, 0x50, 1 << (fet_idx + 8)); // write to GO
+    // printf("Provide input to turn off PWM...");
+    // getchar();
+
+    // status = apci_read8_debug("Reading OUTPUT status", fd, dev_idx, bar_reg, 0x1, NULL); // read DIO control to check whether PWM is indeed on
+    // status = apci_write8_debug("Turning off PWM", fd, dev_idx, bar_reg, reg_ofst + 0x10, 0x0); // PWM bit to low, Pgo to high
+    // status = apci_write8_debug("Turning off all FETs", fd, dev_idx, bar_reg, 0x1, 0xff); // active low
+
+    printf("Provide input to turn ON PWM...");
     getchar();
 
-    status = apci_write16_debug("Setting PWM LOW", fd, dev_idx, bar_reg, reg_ofst + 0x20, 0x7fff); // 0x7fff * 8ns
-    status = apci_write16_debug("Setting PWM HIGH", fd, dev_idx, bar_reg, reg_ofst + 0x24, 0xffff); // 0xffff * 8 ns
+    status = portb_start_pwm(fd, fet_idx, 0x7fff, 0xffff);
 
-    printf("Provide input to turn on PWM...");
+    printf("Provide input to turn OFF PWM...");
     getchar();
 
-    status = apci_write8_debug("Turning on PWM", fd, dev_idx, bar_reg, reg_ofst + 0x10, 0x6); // PWM bit to high, Pgo to high
-    status = apci_write32_debug("Setting GO", fd, dev_idx, bar_reg, 0x50, 1 << (fet_idx + 8)); // write to GO
-    printf("Provide input to turn off PWM...");
-    getchar();
-
-    status = apci_write8_debug("Turning off PWM", fd, dev_idx, bar_reg, reg_ofst + 0x10, 0x0); // PWM bit to low, Pgo to high
-    status = apci_write32_debug("Setting GO", fd, dev_idx, bar_reg, 0x50, 0x0); // write to GO
-    status = apci_write8_debug("Turning off all FETs", fd, dev_idx, bar_reg, 0x1, 0xff); // active low
+    status = portb_stop_pwm(fd, fet_idx);
 
     printf("Provide input to turn all ports to INPUT...");
     getchar();
 
-    status = apci_write8_debug("Setting port B to input", fd, dev_idx, bar_reg, dio_ctrl, turn_all_off);
+    status = portb_set_input(fd);
     printf("Provide input to continue...");
     getchar();
 

@@ -15,8 +15,8 @@ endif
 mpcie_dio_24a_irq: mpcie-dio-24a-irq.c apcilib.h apcilib.c
 	$(GCC) -o mpcie_dio_24a_irq mpcie-dio-24a-irq.c apcilib.c -lm -lpthread -O3
 
-test_pwm: test-pwm.c apcilib.h apcilib.c
-	$(GCC) -o test_pwm test-pwm.c apcilib.c -lm -lpthread -O3
+test_pwm: test-pwm.c apcilib.h apcilib.c pwm_api.c
+	$(GCC) -o test_pwm test-pwm.c pwm_api.c apcilib.c -lm -lpthread -O3
 
 isp_fpga: isp-fpga.c apcilib.h apcilib.c
 	$(GCC) -o isp_fpga isp-fpga.c apcilib.c -lm -lpthread -O3
