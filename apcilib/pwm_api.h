@@ -21,11 +21,13 @@
 #define _Nullable
 #endif
 
+#ifndef PWM_NO_USE_DEBUG
 /**
  * @brief Set this to 0 to get register level debugging.
  * 
  */
 #define PWM_NO_USE_DEBUG 1
+#endif
 
 #ifdef __cplusplus
 extern "C" {

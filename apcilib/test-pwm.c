@@ -9,7 +9,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <signal.h>
-
+#define PWM_NO_USE_DEBUG 0
 #include "pwm_api.h"
 
 #define IM_ARRAYSIZE(x) \
@@ -23,14 +23,17 @@ void sig_handler(int sig)
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2) // show usage and exit
+    if (argc != 4) // show usage and exit
     {
         printf("\n\nUsage:\n\n");
-        printf("sudo %s /dev/apci/<APCI Device File>\n\n", argv[0]);
+        printf("sudo %s /dev/apci/<APCI Device File> <ON TIME (HEX)> <OFF TIME (HEX)>\n\n", argv[0]);
         exit(0);
     }
 
     int fd = open(argv[1], O_RDWR); // open file
+    unsigned short ltime = 0, htime = 0;
+    ltime = strtol(argv[2], NULL, 16);
+    htime = strtol(argv[3], NULL, 16);
 
     if (fd < 0) // error
     {
@@ -72,7 +75,11 @@ int main(int argc, char *argv[])
     // printf("Provide input to turn ON PWM...");
     // getchar();
 
-    status = portb_start_pwm(fd, 0, 0x7fff, 0x7fff);
+    status = apci_read8_debug("Reading PWM divider", fd, 1, 1, 0x2e, NULL); 
+    status = apci_write8_debug("Setting PWM divider", fd, 1, 1, 0x2e, 0);
+
+    printf("PWM ON: 0x%04X OFF: 0x%04X\n", htime, ltime);
+    status = portb_start_pwm(fd, 0, ltime, htime);
 
     // printf("Provide input to turn OFF PWM...");
     // getchar();
