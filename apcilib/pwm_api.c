@@ -273,6 +273,16 @@ int portb_start_pwm(int fd, int fet_idx, uint16_t on_time, uint16_t off_time)
     return 0;
 }
 
+int set_clkdiv(int fd, uint8_t clkdiv)
+{
+    return apci_write8_debug("Setting PWM divider", fd, 1, 1, 0x2e, clkdiv);
+}
+
+int get_clkdiv(int fd, uint8_t *clkdiv)
+{
+    return apci_read8_debug("Reading PWM divider", fd, 1, 1, 0x2e, clkdiv);
+}
+
 #ifdef _PWM_UNIT_TEST
 int main(int argc, char *argv[])
 {

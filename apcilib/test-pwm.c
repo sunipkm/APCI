@@ -32,8 +32,8 @@ int main(int argc, char *argv[])
 
     int fd = open(argv[1], O_RDWR); // open file
     unsigned short ltime = 0, htime = 0;
-    ltime = strtol(argv[2], NULL, 16);
-    htime = strtol(argv[3], NULL, 16);
+    htime = strtol(argv[2], NULL, 16);
+    ltime = strtol(argv[3], NULL, 16);
 
     if (fd < 0) // error
     {
@@ -75,8 +75,10 @@ int main(int argc, char *argv[])
     // printf("Provide input to turn ON PWM...");
     // getchar();
 
-    status = apci_read8_debug("Reading PWM divider", fd, 1, 1, 0x2e, NULL); 
-    status = apci_write8_debug("Setting PWM divider", fd, 1, 1, 0x2e, 0);
+    // status = apci_read8_debug("Reading PWM divider", fd, 1, 1, 0x2e, NULL); 
+    // status = apci_write8_debug("Setting PWM divider", fd, 1, 1, 0x2e, 0);
+    status = get_clkdiv(fd, NULL);
+    status = set_clkdiv(fd, 0);
 
     printf("PWM ON: 0x%04X OFF: 0x%04X\n", htime, ltime);
     status = portb_start_pwm(fd, 0, ltime, htime);
