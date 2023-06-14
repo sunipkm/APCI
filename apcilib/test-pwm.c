@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     if (fd < 0) // error
     {
         printf("Could not open %s, check module/permissions. Error: %s\n\n", argv[1], strerror(errno));
-        exit(0);
+        exit(1);
     }
 
     signal(SIGINT, sig_handler);
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     if (status) // exit because could not write to register
     {
         if (errno == EFAULT)
-            printf("Bad address! Check bar register.\n\n");
+            printf("Bad address! Check BAR.\n\n");
         goto cleanup;
     }
 
@@ -102,4 +102,5 @@ int main(int argc, char *argv[])
     status = portb_set_input(fd);
 cleanup:
     close(fd);
+    return status;
 }

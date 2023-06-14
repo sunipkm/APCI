@@ -1,8 +1,9 @@
 /**
  * @file pwm_api.h
  * @author Sunip K. Mukherjee (sunipkmukherjee@gmail.com)
- * @brief PWM on PORT B API
- * @version 0.1
+ * @brief PWM Control API for mPCIe-DIO-24A with mPCIe-IDIO-8 driver board.
+ * PORT B of the mPCIe-DIO-24A maps to the 8 FETs on the mPCIe-IDIO-8 driver board.
+ * @version 1.0
  * @date 2023-04-26
  * 
  * @copyright Copyright (c) 2023

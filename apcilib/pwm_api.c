@@ -2,7 +2,7 @@
  * @file pwm_api.c
  * @author Sunip K. Mukherjee (sunipkmukherjee@gmail.com)
  * @brief PWM on PORT B API impl
- * @version 0.1
+ * @version 1.0
  * @date 2023-04-26
  * 
  * @copyright Copyright (c) 2023
