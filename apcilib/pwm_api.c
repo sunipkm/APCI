@@ -233,10 +233,10 @@ int portb_update_pwm(int fd, int fet_idx, uint16_t on_time, uint16_t off_time)
     if (status)
         return status;
     int reg_ofst = 0x100 * (fet_idx + 9); // bit 8 + 1
-    status = apci_write16_debug("Setting PWM LOW", fd, 1, 1, reg_ofst + 0x20, on_time); // 0x7fff * 8ns
+    status = apci_write16_debug("Setting PWM LOW", fd, 1, 1, reg_ofst + 0x20, off_time); // 0x7fff * 8ns
     if (status)
         return status;
-    status = apci_write16_debug("Setting PWM HIGH", fd, 1, 1, reg_ofst + 0x24, off_time); // 0xffff * 8 ns
+    status = apci_write16_debug("Setting PWM HIGH", fd, 1, 1, reg_ofst + 0x24, on_time); // 0xffff * 8 ns
     if (status)
         return status;
     status = apci_write8_debug("Setting pin to PWM mode", fd, 1, 1, reg_ofst + 0x10, 0x6); // high going pulse + pwm

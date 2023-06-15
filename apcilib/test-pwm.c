@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 
     // printf("Provide input to turn OFF PWM...");
     // getchar();
-    int i = 5;
+    int i = 3;
     while (!done && i)
     {
         printf("Time remaining: %d s\r", i--);
